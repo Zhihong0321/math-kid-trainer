@@ -8,7 +8,9 @@
   --shadow-strong: 0 10px 25px rgba(0, 0, 0, 0.15);
   --shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.2);
   --timer-color: #ffffffaa;
-  --choice-size: clamp(80px, 12vw, 120px);
+  --box-size: clamp(78px, 20vw, 112px);
+  --choice-size: clamp(72px, 18vw, 104px);
+  --drop-duration: 10s;
 }
 
 * {
@@ -17,24 +19,25 @@
 
 body {
   margin: 0;
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: clamp(16px, 4vw, 56px) clamp(12px, 4vw, 40px);
   font-family: var(--font-main);
   background: var(--bg-gradient);
   color: #17233a;
 }
 
 .game-wrapper {
-  width: min(960px, 92vw);
-  background: rgba(255, 255, 255, 0.88);
-  border-radius: 32px;
-  padding: clamp(24px, 4vw, 48px);
+  width: min(620px, 94vw);
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 28px;
+  padding: clamp(20px, 4vw, 32px);
   box-shadow: var(--shadow-strong);
   display: flex;
   flex-direction: column;
-  gap: clamp(20px, 4vw, 36px);
+  gap: clamp(18px, 3.5vw, 28px);
   position: relative;
   overflow: hidden;
 }
@@ -49,40 +52,49 @@ body {
 
 .game-header {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .title {
-  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
   font-weight: 700;
-  letter-spacing: 1px;
-  text-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
+  letter-spacing: 0.8px;
+  line-height: 1.1;
+  text-shadow: 0 10px 18px rgba(0, 0, 0, 0.1);
 }
 
 .subtitle {
   font-family: var(--font-secondary);
-  font-size: clamp(1.05rem, 2.5vw, 1.4rem);
-  margin-top: 8px;
-  color: rgba(23, 35, 58, 0.85);
+  font-size: clamp(0.95rem, 2.8vw, 1.25rem);
+  margin: 0;
+  color: rgba(23, 35, 58, 0.78);
 }
+
 
 .scoreboard {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(12px, 2vw, 20px);
-  align-items: center;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: clamp(10px, 2vw, 18px);
+  align-items: stretch;
 }
 
 .score-card {
   background: rgba(255, 255, 255, 0.85);
-  border-radius: 24px;
-  padding: clamp(12px, 2vw, 18px) clamp(16px, 3vw, 26px);
+  border-radius: 22px;
+  padding: clamp(12px, 2vw, 18px) clamp(14px, 2.8vw, 22px);
   text-align: center;
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
   border: 2px solid rgba(255, 255, 255, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  justify-content: center;
 }
 
 .label {
-  font-size: clamp(0.9rem, 1.8vw, 1.1rem);
+  font-size: clamp(0.85rem, 1.7vw, 1rem);
   text-transform: uppercase;
   letter-spacing: 1px;
   color: rgba(23, 35, 58, 0.7);
@@ -91,23 +103,30 @@ body {
 .value {
   display: block;
   margin-top: 6px;
-  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
   font-weight: 700;
+}
+
+.mini {
+  font-family: var(--font-secondary);
+  font-size: clamp(0.75rem, 1.8vw, 0.95rem);
+  color: rgba(23, 35, 58, 0.6);
 }
 
 .timer {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 18px;
-  border-radius: 24px;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px clamp(14px, 3vw, 20px);
+  border-radius: 22px;
   background: rgba(0, 0, 0, 0.05);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
 }
 
 .timer-track {
   flex: 1;
-  height: 16px;
+  height: 14px;
   border-radius: 999px;
   overflow: hidden;
   background: rgba(0, 0, 0, 0.08);
@@ -126,7 +145,7 @@ body {
 }
 
 .timer-text {
-  font-size: clamp(1.4rem, 3vw, 1.8rem);
+  font-size: clamp(1.3rem, 3vw, 1.6rem);
   font-weight: 700;
   color: rgba(23, 35, 58, 0.8);
   display: flex;
@@ -149,6 +168,62 @@ body {
   color: rgba(23, 35, 58, 0.7);
 }
 
+.difficulty-panel {
+  background: rgba(255, 255, 255, 0.82);
+  border-radius: 22px;
+  padding: clamp(12px, 3vw, 18px);
+  text-align: center;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+  border: 2px solid rgba(255, 255, 255, 0.65);
+  display: grid;
+  gap: 10px;
+}
+
+.difficulty-intro {
+  font-family: var(--font-secondary);
+  font-size: clamp(1rem, 2.4vw, 1.3rem);
+  font-weight: 600;
+  color: rgba(23, 35, 58, 0.85);
+}
+
+.difficulty-buttons {
+  display: flex;
+  justify-content: center;
+  gap: clamp(8px, 2vw, 14px);
+  flex-wrap: wrap;
+}
+
+.difficulty-button {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-size: clamp(0.95rem, 2.2vw, 1.1rem);
+  font-weight: 600;
+  cursor: pointer;
+  color: #2c1f4a;
+  background: linear-gradient(135deg, #ffe8f6, #c5f5ff);
+  box-shadow: 0 8px 16px rgba(111, 145, 255, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.difficulty-button:hover,
+.difficulty-button:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 22px rgba(111, 145, 255, 0.32);
+}
+
+.difficulty-button.active {
+  background: linear-gradient(135deg, #ff6f91, #ffc75f);
+  color: #fff;
+  box-shadow: 0 14px 28px rgba(255, 111, 145, 0.35);
+}
+
+.difficulty-note {
+  font-family: var(--font-secondary);
+  font-size: clamp(0.85rem, 2.1vw, 1rem);
+  color: rgba(23, 35, 58, 0.65);
+}
+
 .game-stage {
   display: flex;
   justify-content: center;
@@ -156,13 +231,13 @@ body {
 
 .stage {
   position: relative;
-  width: min(460px, 70vw);
-  height: clamp(320px, 45vw, 420px);
-  background: rgba(255, 255, 255, 0.72);
-  border-radius: 32px;
-  box-shadow: inset 0 10px 40px rgba(0, 0, 0, 0.08);
+  width: min(380px, 82vw);
+  height: clamp(260px, 52vh, 360px);
+  background: rgba(255, 255, 255, 0.78);
+  border-radius: 26px;
+  box-shadow: inset 0 8px 34px rgba(0, 0, 0, 0.08);
   overflow: hidden;
-  border: 4px solid rgba(255, 255, 255, 0.8);
+  border: 4px solid rgba(255, 255, 255, 0.82);
 }
 
 .grid-background {
@@ -182,19 +257,19 @@ body {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  width: clamp(110px, 18vw, 140px);
-  height: clamp(110px, 18vw, 140px);
-  border-radius: 28px;
+  width: var(--box-size);
+  height: var(--box-size);
+  border-radius: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(2.5rem, 5vw, 3.4rem);
+  font-size: clamp(2.1rem, 6vw, 3rem);
   font-weight: 700;
   text-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
 }
 
 .falling-box {
-  top: -160px;
+  top: calc(var(--box-size) * -1.1);
   background: var(--box-gradient);
   box-shadow: var(--shadow-soft);
   border: 3px solid rgba(255, 255, 255, 0.9);
@@ -207,14 +282,14 @@ body {
 }
 
 .target-box {
-  top: calc(50% - clamp(55px, 9vw, 70px));
+  top: calc(50% - (var(--box-size) / 2));
   background: var(--target-gradient);
   box-shadow: inset 0 0 0 4px rgba(255, 255, 255, 0.75), var(--shadow-soft);
   color: #0b3653;
 }
 
 .falling-box.drop {
-  animation: drop 6s linear forwards;
+  animation: drop var(--drop-duration, 10s) linear forwards;
 }
 
 .stage.celebrate {
@@ -274,22 +349,22 @@ body {
 
 @keyframes drop {
   0% {
-    top: -160px;
+    top: calc(var(--box-size) * -1.1);
   }
   100% {
-    top: calc(50% - clamp(55px, 9vw, 70px));
+    top: calc(50% - (var(--box-size) / 2));
   }
 }
 
 .choice-button {
   width: var(--choice-size);
   height: var(--choice-size);
-  border-radius: 28px;
+  border-radius: 24px;
   border: none;
-  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  font-size: clamp(1.4rem, 4.2vw, 1.9rem);
   font-weight: 700;
   background: linear-gradient(145deg, #ffd2eb, #ffc764);
-  box-shadow: 0 12px 25px rgba(255, 133, 186, 0.35);
+  box-shadow: 0 12px 24px rgba(255, 133, 186, 0.32);
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
   position: relative;
@@ -348,11 +423,11 @@ body {
     opacity: 1;
   }
   70% {
-    transform: translateY(-190px) scale(1.12) rotate(4deg);
+    transform: translateY(calc(var(--box-size) * -1.6)) scale(1.12) rotate(4deg);
     opacity: 1;
   }
   100% {
-    transform: translateY(-220px) scale(0.8) rotate(-6deg);
+    transform: translateY(calc(var(--box-size) * -1.8)) scale(0.8) rotate(-6deg);
     opacity: 0;
   }
 }
@@ -386,10 +461,10 @@ body {
 }
 
 .equation-panel {
-  min-height: 48px;
+  min-height: 42px;
   text-align: center;
   font-family: var(--font-secondary);
-  font-size: clamp(1.4rem, 2.6vw, 2rem);
+  font-size: clamp(1.2rem, 3vw, 1.8rem);
   font-weight: 600;
   color: rgba(23, 35, 58, 0.9);
 }
@@ -431,16 +506,17 @@ body {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: clamp(14px, 2.5vw, 22px);
+  gap: clamp(10px, 3vw, 18px);
 }
 
 .control-panel {
   text-align: center;
+  margin-top: 4px;
 }
 
 button.primary {
-  font-size: clamp(1.2rem, 2.2vw, 1.5rem);
-  padding: 14px 28px;
+  font-size: clamp(1.05rem, 2.4vw, 1.35rem);
+  padding: 12px 26px;
   border: none;
   border-radius: 999px;
   background: linear-gradient(135deg, #ff6f91, #ff9671);
@@ -453,8 +529,8 @@ button.primary {
 
 button.primary:hover,
 button.primary:focus-visible {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(255, 111, 145, 0.45);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 20px 36px rgba(255, 111, 145, 0.42);
 }
 
 button.primary:disabled {
@@ -493,22 +569,52 @@ button.primary:disabled {
 }
 
 .message-tagline {
-  font-size: clamp(1.1rem, 2vw, 1.4rem);
-  margin-top: 8px;
-  color: rgba(23, 35, 58, 0.75);
+  font-size: clamp(0.95rem, 2.4vw, 1.2rem);
+  margin-top: 6px;
+  color: rgba(23, 35, 58, 0.7);
 }
 
-@media (max-width: 700px) {
-  .scoreboard {
-    grid-template-columns: 1fr;
+@media (max-width: 640px) {
+  body {
+    padding: clamp(14px, 5vw, 32px) clamp(10px, 6vw, 28px);
   }
-  .timer {
-    justify-content: center;
+  .game-wrapper {
+    gap: clamp(16px, 4vw, 24px);
+    padding: clamp(18px, 5vw, 28px);
+  }
+  .scoreboard {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   }
   .timer-track {
-    max-width: 220px;
+    max-width: 240px;
   }
   .stage {
-    height: clamp(320px, 75vw, 420px);
+    width: min(340px, 88vw);
+    height: clamp(250px, 58vh, 330px);
+  }
+  .difficulty-panel {
+    padding: clamp(14px, 5vw, 20px);
+  }
+}
+
+@media (max-width: 520px) {
+  :root {
+    --box-size: clamp(68px, 32vw, 94px);
+    --choice-size: clamp(62px, 28vw, 92px);
+  }
+  .difficulty-intro {
+    font-size: clamp(0.95rem, 3.2vw, 1.15rem);
+  }
+  .difficulty-note {
+    font-size: clamp(0.8rem, 3vw, 0.95rem);
+  }
+}
+
+@media (max-height: 720px) and (max-width: 900px) {
+  body {
+    padding: clamp(12px, 3vw, 28px) clamp(10px, 4vw, 24px);
+  }
+  .game-wrapper {
+    gap: clamp(14px, 3vw, 22px);
   }
 }

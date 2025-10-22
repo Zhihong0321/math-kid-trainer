@@ -1,5 +1,14 @@
-const TIME_LIMIT = 6; // seconds
 const OPTION_COUNT = 5;
+const playerName = "ShuLaw";
+
+const DIFFICULTY_SETTINGS = {
+  easy: { label: "Easy", maxTarget: 10, timeLimit: 10, maxOffset: 9 },
+  medium: { label: "Medium", maxTarget: 20, timeLimit: 8, maxOffset: 12 },
+  hard: { label: "Hard", maxTarget: 40, timeLimit: 7, maxOffset: 15 },
+};
+
+let currentDifficulty = "easy";
+let currentSettings = DIFFICULTY_SETTINGS[currentDifficulty];
 
 const stage = document.getElementById("stage");
 const fallingBox = document.getElementById("fallingBox");
@@ -12,6 +21,9 @@ const timerCount = document.getElementById("timerCount");
 const confettiLayer = document.getElementById("confettiLayer");
 const scoreValue = document.getElementById("scoreValue");
 const streakValue = document.getElementById("streakValue");
+const bestValue = document.getElementById("bestValue");
+const difficultyButtons = document.querySelectorAll(".difficulty-button");
+const difficultyNote = document.getElementById("difficultyNote");
 
 let score = 0;
 let streak = 0;
@@ -24,26 +36,54 @@ let timerInterval = null;
 let fallTimeout = null;
 
 const successPhrases = [
-  "Math Hero!",
-  "Super Solver!",
-  "Brain Power +10!",
-  "Numbers Ninja!",
-  "Equation Expert!",
+  "Awesome aim, {name}!",
+  "Math hero mode: {name}!",
+  "Number ninja moves, {name}!",
+  "Brain power boost for {name}!",
+  "Equation expert vibes, {name}!",
 ];
 
 const encouragements = [
-  "Great try! You'll get the next one!",
-  "Keep going, superstar!",
-  "Every hero keeps training!",
-  "Math muscles growing!",
-  "You're getting stronger!",
+  "Great try, {name}! You'll nail the next one!",
+  "Keep going, {name}! Superstars grow with practice!",
+  "Every hero keeps training, {name}!",
+  "Math muscles growing strong, {name}!",
+  "You're getting stronger every round, {name}!",
 ];
+
+difficultyButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const selected = button.dataset.difficulty;
+    if (selected === currentDifficulty) return;
+
+    currentDifficulty = selected;
+    currentSettings = DIFFICULTY_SETTINGS[currentDifficulty];
+
+    difficultyButtons.forEach((btn) => {
+      btn.classList.toggle("active", btn === button);
+    });
+
+    resetGame();
+    updateDifficultyDetails();
+
+    if (roundActive) {
+      roundActive = false;
+      clearTimers();
+      setTimeout(() => {
+        startRound();
+      }, 300);
+    } else {
+      refreshTimerIdle();
+    }
+  });
+});
 
 playButton.addEventListener("click", () => {
   if (!roundActive) {
     playButton.disabled = true;
     playButton.textContent = "Training...";
     resetGame();
+    updateDifficultyDetails();
     startRound();
   }
 });
@@ -62,6 +102,10 @@ function startRound() {
   fallingBox.style.top = "";
   fallingBox.style.transition = "";
   fallingBox.style.transform = "translateX(-50%)";
+  fallingBox.style.setProperty(
+    "--drop-duration",
+    `${currentSettings.timeLimit}s`
+  );
   void fallingBox.offsetWidth;
   fallingBox.classList.add("ready");
 
@@ -84,16 +128,17 @@ function startRound() {
 }
 
 function createPuzzle() {
-  const base = randomInt(0, 12);
-  const offset = randomInt(1, 9);
-  const target = base + offset;
+  const { maxTarget, maxOffset } = currentSettings;
+  const target = randomInt(4, maxTarget);
+  const minBase = Math.max(0, target - maxOffset);
+  const base = randomInt(minBase, target - 1);
+  const offset = target - base;
 
   const options = new Set([offset]);
+  const optionMax = Math.max(maxOffset, offset + 4);
   while (options.size < OPTION_COUNT) {
-    const candidate = randomInt(1, 10);
-    if (!options.has(candidate)) {
-      options.add(candidate);
-    }
+    const candidate = randomInt(1, optionMax);
+    options.add(candidate);
   }
 
   return { base, offset, target, options: shuffle([...options]) };
@@ -135,8 +180,9 @@ function celebrateSuccess(button) {
   animateFallingBoxTowardsTarget();
   button.classList.add("launch-answer");
 
-  const phrase = successPhrases[Math.floor(Math.random() * successPhrases.length)];
-  const tagline = streak > 1 ? `${phrase} Streak x${streak}!` : phrase;
+  const phrase = pickPersonalized(successPhrases);
+  const tagline =
+    streak > 1 ? `${phrase} Streak x${streak}!` : phrase;
   setEquationCard(
     "correct",
     `${currentBase} + ${currentAnswer} = ${currentTarget}`,
@@ -164,7 +210,7 @@ function showMistake(button) {
   setEquationCard(
     "oops",
     `${currentBase} + ${currentAnswer} = ${currentTarget}`,
-    encouragements[Math.floor(Math.random() * encouragements.length)]
+    pickPersonalized(encouragements)
   );
 
   setTimeout(() => {
@@ -185,7 +231,7 @@ function timeRanOut() {
   setEquationCard(
     "oops",
     `${currentBase} + ${currentAnswer} = ${currentTarget}`,
-    "Time's up! Let's try another!"
+    `Time's up, ${playerName}! Let's try another!`
   );
 
   setTimeout(() => {
@@ -248,13 +294,13 @@ function setEquationCard(type, equation, tagline) {
 function launchTimer() {
   timerFill.style.width = "100%";
   timerFill.classList.remove("low");
-  timerCount.textContent = TIME_LIMIT;
-  let timeRemaining = TIME_LIMIT;
+  timerCount.textContent = currentSettings.timeLimit;
+  let timeRemaining = currentSettings.timeLimit;
 
   timerInterval = setInterval(() => {
     timeRemaining -= 1;
     timerCount.textContent = Math.max(timeRemaining, 0);
-    timerFill.style.width = `${(timeRemaining / TIME_LIMIT) * 100}%`;
+    timerFill.style.width = `${(timeRemaining / currentSettings.timeLimit) * 100}%`;
     if (timeRemaining <= 2) {
       timerFill.classList.add("low");
     }
@@ -267,7 +313,7 @@ function launchTimer() {
   fallTimeout = setTimeout(() => {
     clearTimers();
     timeRanOut();
-  }, TIME_LIMIT * 1000);
+  }, currentSettings.timeLimit * 1000);
 }
 
 function disableChoices() {
@@ -292,7 +338,8 @@ function removeStageEffects() {
 
 function updateScoreboard() {
   scoreValue.textContent = score;
-  streakValue.textContent = bestStreak;
+  streakValue.textContent = streak;
+  bestValue.textContent = `Best ${bestStreak}`;
 }
 
 function spawnConfetti() {
@@ -344,3 +391,23 @@ window.addEventListener("blur", () => {
     timeRanOut();
   }
 });
+
+function pickPersonalized(messages) {
+  const raw = messages[Math.floor(Math.random() * messages.length)];
+  return raw.replaceAll("{name}", playerName);
+}
+
+function updateDifficultyDetails() {
+  const { maxTarget, timeLimit } = currentSettings;
+  difficultyNote.textContent = `Numbers up to ${maxTarget} • ${timeLimit} seconds to connect`;
+  refreshTimerIdle();
+}
+
+function refreshTimerIdle() {
+  timerFill.style.width = "100%";
+  timerFill.classList.remove("low");
+  timerCount.textContent = currentSettings.timeLimit;
+}
+
+updateDifficultyDetails();
+updateScoreboard();

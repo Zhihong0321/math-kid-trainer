@@ -34,6 +34,8 @@ let currentTarget = 0;
 let currentAnswer = 0;
 let timerInterval = null;
 let fallTimeout = null;
+let audioContext = null;
+let audioReady = false;
 
 const successPhrases = [
   "Awesome aim, {name}!",
@@ -79,6 +81,7 @@ difficultyButtons.forEach((button) => {
 });
 
 playButton.addEventListener("click", () => {
+  unlockAudio();
   if (!roundActive) {
     playButton.disabled = true;
     playButton.textContent = "Training...";
@@ -159,6 +162,7 @@ function renderOptions(options) {
 
 function handleChoice(value, button) {
   if (!roundActive) return;
+  unlockAudio();
 
   if (value === currentAnswer) {
     celebrateSuccess(button);
@@ -189,6 +193,7 @@ function celebrateSuccess(button) {
     tagline
   );
 
+  playSound("success");
   spawnConfetti();
   setTimeout(() => {
     startRound();
@@ -213,9 +218,10 @@ function showMistake(button) {
     pickPersonalized(encouragements)
   );
 
+  playSound("fail");
   setTimeout(() => {
     startRound();
-  }, 2200);
+  }, 4200);
 }
 
 function timeRanOut() {
@@ -234,9 +240,10 @@ function timeRanOut() {
     `Time's up, ${playerName}! Let's try another!`
   );
 
+  playSound("fail");
   setTimeout(() => {
     startRound();
-  }, 2200);
+  }, 4200);
 }
 
 function animateFallingBoxTowardsTarget() {
@@ -303,6 +310,9 @@ function launchTimer() {
     timerFill.style.width = `${(timeRemaining / currentSettings.timeLimit) * 100}%`;
     if (timeRemaining <= 2) {
       timerFill.classList.add("low");
+    }
+    if (timeRemaining <= 3 && timeRemaining > 0) {
+      playSound("tick");
     }
     if (timeRemaining <= 0) {
       clearTimers();
@@ -383,6 +393,71 @@ function shuffle(array) {
     [arr[i], arr[j]] = [arr[j], arr[i]];
   }
   return arr;
+}
+
+const SOUND_LIBRARY = {
+  success: [
+    { freq: 523, glide: 659, duration: 0.18, type: "triangle", gain: 0.32 },
+    { freq: 659, glide: 784, duration: 0.2, type: "triangle", gain: 0.26 },
+    { freq: 784, duration: 0.28, type: "sine", gain: 0.22 },
+  ],
+  fail: [
+    { freq: 220, glide: 180, duration: 0.32, type: "sawtooth", gain: 0.28 },
+    { freq: 180, glide: 140, duration: 0.35, type: "square", gain: 0.22 },
+  ],
+  tick: [{ freq: 940, duration: 0.08, type: "square", gain: 0.18 }],
+};
+
+function unlockAudio() {
+  if (audioContext && audioContext.state === "running") {
+    audioReady = true;
+    return;
+  }
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  if (!AudioCtx) {
+    audioReady = false;
+    return;
+  }
+  if (!audioContext) {
+    audioContext = new AudioCtx();
+  }
+  if (audioContext.state === "suspended") {
+    audioContext.resume().catch(() => {});
+  }
+  audioReady = audioContext.state !== "closed";
+}
+
+function playSound(name) {
+  if (!audioContext || !audioReady) return;
+  if (audioContext.state === "suspended") {
+    audioContext.resume();
+  }
+  const sequence = SOUND_LIBRARY[name];
+  if (!sequence) return;
+
+  let start = audioContext.currentTime + 0.01;
+  sequence.forEach(({ freq, glide, duration, type = "sine", gain = 0.25 }) => {
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    oscillator.type = type;
+    oscillator.frequency.setValueAtTime(freq, start);
+    if (glide) {
+      oscillator.frequency.linearRampToValueAtTime(glide, start + duration);
+    }
+
+    gainNode.gain.setValueAtTime(0.0001, start);
+    gainNode.gain.exponentialRampToValueAtTime(gain, start + 0.02);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    oscillator.start(start);
+    oscillator.stop(start + duration + 0.05);
+
+    start += duration * 0.85;
+  });
 }
 
 window.addEventListener("blur", () => {

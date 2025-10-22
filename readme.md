@@ -1,20 +1,28 @@
-This is a empty project.
+# Math Kid Trainer
 
-i want to create a simple HTML Game, that i can easily deploy on my Railway Server.
+A playful HTML/CSS/JavaScript mini game that turns basic addition practice into a colorful “math gym” for kids. Numbers drop like a Tetris block, players choose the right power-up to land on the target number, and every correct answer explodes with confetti.
 
-- the game act as a GYM room to train kid with math Game.
+## How to play
 
-The Game.
-- it look like tetris, but everything it will drop a number from top ( a square box contain a number )
-- the middle would appear a number in square also.
-- the buttom would appear 5 number to choose from.
+1. Open `index.html` in any modern browser (the game is fully client-side).
+2. Click **Start Training**.
+3. A number block begins to fall from the top of the stage while a target number waits in the middle.
+4. Tap the correct `+` option so the sum matches the target before the timer reaches zero.
+   * If you nail it, the answer rockets upward, the stage glows, and cheerful confetti celebrates the win.
+   * If time runs out or the wrong boost is selected, the stage rumbles and the correct equation is displayed so kids can learn from the miss.
+5. Keep going to build streaks and chase a new personal best!
 
-Example : the top now drop a number 2, the middle is 7
+## Deploying
 
-bottom selection = +2 , +3, +4, +5, +6
-( correct answer = +5 ) ( because 2+5 = 7 )
+The site is still 100% static, but Railway expects a hint for how to serve the files. This repo ships with:
 
-If the user choose the wrong answer.
-It will break all option, and the game will show, 2+5 = 7. and go next round.
+* a [`Staticfile`](Staticfile) so Railpack recognises the Static buildpack
+* a [`start.sh`](start.sh) helper that runs Python’s built-in web server on the port Railway provides
 
-Try understand what i want 1st, you can ask me question
+With those two files in place you can:
+
+1. Create a new Railway project and choose **Static Site** (the buildpack will be auto-detected).
+2. Deploy the repository as-is—Railway will execute `start.sh` which serves `index.html`, `style.css`, and `game.js`.
+3. Visit the generated URL and start training your young math heroes.
+
+Any other static host (GitHub Pages, Netlify, Vercel, etc.) will work as well—just upload the HTML, CSS, and JS files.

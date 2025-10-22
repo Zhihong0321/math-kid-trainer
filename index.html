@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Math Kid Trainer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="game-wrapper">
+      <header class="game-header">
+        <div class="title">Math Gym: Number Drop!</div>
+        <div class="subtitle">Catch the right math power-up before the timer runs out!</div>
+      </header>
+
+      <section class="scoreboard">
+        <div class="score-card">
+          <span class="label">Score</span>
+          <span class="value" id="scoreValue">0</span>
+        </div>
+        <div class="score-card">
+          <span class="label">Best Streak</span>
+          <span class="value" id="streakValue">0</span>
+        </div>
+        <div class="timer" aria-live="polite">
+          <div class="timer-track">
+            <div class="timer-fill" id="timerFill"></div>
+          </div>
+          <span class="timer-text">
+            <span id="timerCount">6</span>
+            <span class="timer-units">sec</span>
+          </span>
+        </div>
+      </section>
+
+      <main class="game-stage">
+        <div class="stage" id="stage">
+          <div class="grid-background">
+            <div class="grid-line"></div>
+            <div class="grid-line"></div>
+            <div class="grid-line"></div>
+            <div class="grid-line"></div>
+          </div>
+          <div class="falling-box" id="fallingBox" aria-live="polite"></div>
+          <div class="target-box" id="targetBox"></div>
+        </div>
+      </main>
+
+      <section class="equation-panel" id="equationPanel" aria-live="polite"></section>
+
+      <section class="choices" id="choices" aria-label="Choose the number to make the equation work"></section>
+
+      <section class="control-panel">
+        <button id="playButton" class="primary">Start Training</button>
+      </section>
+
+      <div class="confetti-layer" id="confettiLayer" aria-hidden="true"></div>
+    </div>
+
+    <script src="game.js"></script>
+  </body>
+</html>

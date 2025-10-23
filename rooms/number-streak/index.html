@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Number Streak | ShuLaw's Math Gym</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <nav class="game-nav">
+      <a class="home-link" href="../../index.html">← Back to Math Gym Lobby</a>
+    </nav>
+
+    <div class="game-wrapper">
+      <header class="game-header">
+        <p class="game-eyebrow">Pattern sprint challenge</p>
+        <h1 class="game-title">Number Streak</h1>
+        <p class="game-subtitle">
+          ShuLaw, keep the streak alive by spotting the missing numbers before the train leaves
+          the station!
+        </p>
+      </header>
+
+      <section class="scoreboard" aria-label="Your progress">
+        <div class="score-card">
+          <span class="label">Score</span>
+          <span class="value" id="scoreValue">0</span>
+        </div>
+        <div class="score-card">
+          <span class="label">Streak</span>
+          <span class="value" id="streakValue">0</span>
+          <span class="mini" id="bestValue">Best 0</span>
+        </div>
+        <div class="score-card">
+          <span class="label">Speed</span>
+          <span class="value" id="speedValue">100%</span>
+          <span class="mini">Time left: <span id="timeValue">--</span>s</span>
+        </div>
+      </section>
+
+      <section class="difficulty-panel" aria-label="Select difficulty">
+        <div class="difficulty-intro">Pick your streak pace, ShuLaw!</div>
+        <div class="difficulty-buttons" role="group" aria-label="Difficulty">
+          <button class="difficulty-button active" data-difficulty="easy" type="button">Easy</button>
+          <button class="difficulty-button" data-difficulty="medium" type="button">Medium</button>
+          <button class="difficulty-button" data-difficulty="hard" type="button">Hard</button>
+        </div>
+        <p class="difficulty-note" id="difficultyNote">Counting by 1s • up to 60 numbers • about 5.6s to answer</p>
+      </section>
+
+      <main class="stage-wrapper" aria-live="polite">
+        <div class="sequence-stage" id="sequenceStage">
+          <div class="stage-backdrop"></div>
+          <div class="highlight-window" id="highlightWindow">
+            <span class="highlight-label">Answer zone</span>
+          </div>
+          <div class="sequence-row" id="sequenceRow"></div>
+        </div>
+      </main>
+
+      <section class="prompt-panel" id="promptPanel" aria-live="polite">
+        Tap “Start Number Streak” to warm up the numbers, ShuLaw!
+      </section>
+
+      <section class="choices" id="choices" aria-label="Choose the missing number"></section>
+
+      <section class="control-panel">
+        <button id="playButton" class="primary">Start Number Streak</button>
+      </section>
+    </div>
+
+    <script src="game.js"></script>
+  </body>
+</html>

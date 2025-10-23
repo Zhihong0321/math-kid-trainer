@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Math Tetris | ShuLaw's Math Gym</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <nav class="game-nav">
+      <a class="home-link" href="../../index.html">← Back to Math Gym Lobby</a>
+    </nav>
+    <div class="game-wrapper">
+      <header class="game-header">
+        <div class="title">ShuLaw&apos;s Math Gym Drop!</div>
+        <div class="subtitle">Let&apos;s power up your math muscles with speedy number matches.</div>
+      </header>
+
+      <section class="scoreboard">
+        <div class="score-card">
+          <span class="label">Score</span>
+          <span class="value" id="scoreValue">0</span>
+        </div>
+        <div class="score-card">
+          <span class="label">Streak</span>
+          <span class="value" id="streakValue">0</span>
+          <span class="mini" id="bestValue">Best 0</span>
+        </div>
+        <div class="timer" aria-live="polite">
+          <div class="timer-track">
+            <div class="timer-fill" id="timerFill"></div>
+          </div>
+          <span class="timer-text">
+            <span id="timerCount">10</span>
+            <span class="timer-units">sec</span>
+          </span>
+        </div>
+      </section>
+
+      <section class="difficulty-panel" aria-label="Select game difficulty">
+        <div class="difficulty-intro">Choose your challenge, ShuLaw!</div>
+        <div class="difficulty-buttons" role="group" aria-label="Difficulty">
+          <button class="difficulty-button active" data-difficulty="easy" type="button">Easy</button>
+          <button class="difficulty-button" data-difficulty="medium" type="button">Medium</button>
+          <button class="difficulty-button" data-difficulty="hard" type="button">Hard</button>
+        </div>
+        <div class="difficulty-note" id="difficultyNote">Numbers up to 10 • 10 seconds to connect</div>
+      </section>
+
+      <main class="game-stage">
+        <div class="stage" id="stage">
+          <div class="grid-background">
+            <div class="grid-line"></div>
+            <div class="grid-line"></div>
+            <div class="grid-line"></div>
+            <div class="grid-line"></div>
+          </div>
+          <div class="falling-box" id="fallingBox" aria-live="polite"></div>
+          <div class="target-box" id="targetBox"></div>
+        </div>
+      </main>
+
+      <section class="equation-panel" id="equationPanel" aria-live="polite"></section>
+
+      <section class="choices" id="choices" aria-label="Choose the number to make the equation work"></section>
+
+      <section class="control-panel">
+        <button id="playButton" class="primary">Start Training, ShuLaw!</button>
+      </section>
+
+      <div class="confetti-layer" id="confettiLayer" aria-hidden="true"></div>
+    </div>
+
+    <script src="game.js"></script>
+  </body>
+</html>

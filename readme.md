@@ -1,20 +1,54 @@
-This is a empty project.
+# Math Kid Trainer
 
-i want to create a simple HTML Game, that i can easily deploy on my Railway Server.
+A playful multi-room HTML/CSS/JavaScript "math gym" created especially for ShuLaw. The lobby
+lets you pick from themed training rooms so it is easy to grow the collection of games over
+time.
 
-- the game act as a GYM room to train kid with math Game.
+## Rooms
 
-The Game.
-- it look like tetris, but everything it will drop a number from top ( a square box contain a number )
-- the middle would appear a number in square also.
-- the buttom would appear 5 number to choose from.
+### Math Tetris
+Sprint to match the falling tile with ShuLaw’s target number before the countdown hits zero.
+Select from three difficulty levels, earn streaks, enjoy confetti bursts, and learn from
+coaching cues when a mistake slips through.
 
-Example : the top now drop a number 2, the middle is 7
+### Number Streak
+Dash alongside a moving queue of numbers, fill in the glowing gaps, and keep the train rolling
+before the empty car hits the station. Trains can now stretch to 60 cars, a chiptune loop keeps the
+energy up, and each correct answer speeds the rhythm by 1% (capped at 50%) while ShuLaw practises
+1s, 2s, or 3s on demand.
 
-bottom selection = +2 , +3, +4, +5, +6
-( correct answer = +5 ) ( because 2+5 = 7 )
+### Number Transformer
+Race the timer to turn each value into its closest friendly number. Follow the animated number line
+to compare distances and round to the nearest tens, 50s, or hundreds while chiptune beats keep the
+focus flowing.
 
-If the user choose the wrong answer.
-It will break all option, and the game will show, 2+5 = 7. and go next round.
+## Run locally
 
-Try understand what i want 1st, you can ask me question
+1. Open `index.html` in any modern browser (everything is client-side).
+2. Choose a training room from the lobby. Math Tetris lives at `rooms/math-tetris/` if you want
+a direct link.
+3. Play, experiment, and refresh to reset the session.
+
+## Deploying
+
+The site is still 100% static, but Railway expects a hint for how to serve the files. This
+repo ships with:
+
+* a [`Staticfile`](Staticfile) so Railpack recognises the Static buildpack
+* a [`start.sh`](start.sh) helper that runs Python’s built-in web server on the port Railway provides
+
+With those two files in place you can:
+
+1. Create a new Railway project and choose **Static Site** (the buildpack will be auto-detected).
+2. Deploy the repository as-is—Railway will execute `start.sh` which serves the lobby and `rooms/` directory.
+3. Visit the generated URL and start training your young math heroes.
+
+Any other static host (GitHub Pages, Netlify, Vercel, etc.) will work as well—just upload the
+HTML, CSS, and JS files.
+
+## Adding another training room
+
+1. Create a new subdirectory inside `rooms/` (for example `rooms/new-room/`).
+2. Add an `index.html` (and optional CSS/JS) for that room.
+3. Update the lobby (`index.html`) with a card that links to the new folder.
+4. Deploy or reload—the lobby automatically picks up the new room links.

@@ -8,26 +8,26 @@ const DIFFICULTY_SETTINGS = {
   easy: {
     label: "Easy",
     step: 1,
-    responseWindow: 5.5,
-    blanks: 3,
-    length: 11,
-    startRange: [1, 9],
+    responseWindow: 5.6,
+    blanks: 8,
+    lengthRange: [24, 60],
+    startRange: [1, 16],
   },
   medium: {
     label: "Medium",
     step: 2,
-    responseWindow: 4.6,
-    blanks: 3,
-    length: 11,
-    startRange: [2, 14],
+    responseWindow: 4.7,
+    blanks: 10,
+    lengthRange: [30, 60],
+    startRange: [2, 22],
   },
   hard: {
     label: "Hard",
     step: 3,
-    responseWindow: 4.1,
-    blanks: 4,
-    length: 12,
-    startRange: [3, 18],
+    responseWindow: 4.2,
+    blanks: 12,
+    lengthRange: [36, 60],
+    startRange: [3, 28],
   },
 };
 
@@ -63,6 +63,54 @@ let answerDeadline = null;
 let nextRoundTimeout = null;
 let introPlayed = false;
 
+let audioContext = null;
+let audioReady = false;
+let masterGain = null;
+let sfxGain = null;
+let bgmGain = null;
+let backgroundScheduled = false;
+let backgroundIntervalId = null;
+let backgroundNextTime = 0;
+
+const SOUND_LIBRARY = {
+  success: [
+    { freq: 523, glide: 659, duration: 0.18, type: "square", gain: 0.32 },
+    { freq: 784, duration: 0.22, type: "triangle", gain: 0.26 },
+    { freq: 988, duration: 0.28, type: "square", gain: 0.24 },
+  ],
+  fail: [
+    { freq: 220, glide: 196, duration: 0.26, type: "sawtooth", gain: 0.24 },
+    { freq: 196, glide: 164, duration: 0.34, type: "triangle", gain: 0.2 },
+  ],
+  tick: [{ freq: 880, duration: 0.08, type: "square", gain: 0.16 }],
+};
+
+const BGM_BEAT_DURATION = 0.36;
+const BGM_LOOP_BEATS = 8;
+const BGM_SEQUENCE = [
+  { beat: 0, freq: 392, duration: 0.26, type: "square", gain: 0.18 },
+  { beat: 0.5, freq: 523, duration: 0.2, type: "square", gain: 0.16 },
+  { beat: 1, freq: 659, duration: 0.26, type: "triangle", gain: 0.14 },
+  { beat: 1.5, freq: 587, duration: 0.22, type: "square", gain: 0.14 },
+  { beat: 2, freq: 784, duration: 0.28, type: "square", gain: 0.18 },
+  { beat: 3, freq: 659, duration: 0.24, type: "triangle", gain: 0.15 },
+  { beat: 3.5, freq: 587, duration: 0.22, type: "square", gain: 0.13 },
+  { beat: 4, freq: 523, duration: 0.28, type: "square", gain: 0.16 },
+  { beat: 4.5, freq: 659, duration: 0.24, type: "triangle", gain: 0.14 },
+  { beat: 5, freq: 392, duration: 0.3, type: "square", gain: 0.18 },
+  { beat: 6, freq: 523, duration: 0.24, type: "square", gain: 0.15 },
+  { beat: 6.5, freq: 466, duration: 0.24, type: "square", gain: 0.13 },
+  { beat: 7, freq: 392, duration: 0.28, type: "triangle", gain: 0.12 },
+  { beat: 7.5, freq: 349, duration: 0.26, type: "square", gain: 0.12 },
+];
+
+const BGM_BASS_SEQUENCE = [
+  { beat: 0, freq: 98, duration: 0.54, type: "sawtooth", gain: 0.14 },
+  { beat: 2, freq: 123, duration: 0.54, type: "sawtooth", gain: 0.14 },
+  { beat: 4, freq: 131, duration: 0.54, type: "sawtooth", gain: 0.14 },
+  { beat: 6, freq: 147, duration: 0.54, type: "sawtooth", gain: 0.14 },
+];
+
 const successPhrases = [
   "Lightning quick, {name}!",
   "Streak superstar move, {name}!",
@@ -86,6 +134,7 @@ const coachingPhrases = [
 ];
 
 playButton.addEventListener("click", () => {
+  void unlockAudio();
   if (!introPlayed) {
     introPlayed = true;
   }
@@ -101,6 +150,7 @@ playButton.addEventListener("click", () => {
 
 difficultyButtons.forEach((button) => {
   button.addEventListener("click", () => {
+    void unlockAudio();
     const selected = button.dataset.difficulty;
     if (selected === currentDifficulty) return;
 
@@ -130,6 +180,24 @@ window.addEventListener("resize", () => {
   const stageWidth = stage.getBoundingClientRect().width;
   rowPosition = Math.min(rowPosition, stageWidth + 60);
   row.style.transform = `translateX(${rowPosition}px)`;
+});
+
+window.addEventListener("blur", () => {
+  pauseBackgroundMusic();
+});
+
+window.addEventListener("focus", () => {
+  if (audioReady) {
+    startBackgroundMusic();
+  }
+});
+
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    pauseBackgroundMusic();
+  } else if (audioReady) {
+    startBackgroundMusic();
+  }
 });
 
 function resetSession(resetBest = true) {
@@ -193,7 +261,7 @@ function startRound() {
 function createSequence() {
   const settings = currentSettings;
   const step = settings.step;
-  const length = settings.length;
+  const length = randomInt(settings.lengthRange[0], settings.lengthRange[1]);
   const [startMin, startMax] = settings.startRange;
   const startValue = randomInt(startMin, startMax);
   const numbers = Array.from({ length }, (_, index) => startValue + index * step);
@@ -265,11 +333,17 @@ function renderChoices(optionValues, disabled = false) {
   });
 }
 
-function handleChoice(value, button) {
+async function handleChoice(value, button) {
   const blank = blanks[activeBlankIndex];
   if (!blank || blank.answered || button.disabled) return;
 
   disableChoices();
+
+  await unlockAudio();
+
+  if (blank !== blanks[activeBlankIndex] || blank.answered) {
+    return;
+  }
 
   if (value === blank.value) {
     button.classList.add("correct");
@@ -319,6 +393,8 @@ function handleSuccess(blank) {
   }
   updateScoreboard();
 
+  playSound("success");
+
   speedMultiplier = Math.min(speedMultiplier + SPEED_INCREMENT, SPEED_LIMIT);
   updateSpeedDisplay();
 
@@ -334,6 +410,8 @@ function handleMiss(blank, chosenValue = null) {
   } else {
     promptPanel.innerHTML = `${encouragement}<br /><span class="hint">${explanation}</span>`;
   }
+
+  playSound("fail");
 
   streak = 0;
   updateScoreboard();
@@ -391,6 +469,7 @@ function startAnswerWindow(blank) {
   answerDeadline = performance.now() + windowSeconds * 1000;
   updateTimeDisplay(windowSeconds);
   promptPanel.textContent = `Quick, fill the gap before it slides away, ${playerName}!`;
+  playSound("tick");
 }
 
 function handleTimeout() {
@@ -495,9 +574,167 @@ function updateTimeDisplay(value) {
 }
 
 function updateDifficultyNote() {
-  difficultyNote.textContent = `Counting by ${currentSettings.step}s • about ${currentSettings.responseWindow.toFixed(
+  const { step, responseWindow, lengthRange } = currentSettings;
+  const maxLength = Array.isArray(lengthRange) ? lengthRange[1] : lengthRange;
+  difficultyNote.textContent = `Counting by ${step}s • up to ${maxLength} numbers • about ${responseWindow.toFixed(
     1
   )}s to answer`;
+}
+
+function unlockAudio() {
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  if (!AudioCtx) {
+    audioReady = false;
+    return Promise.resolve(false);
+  }
+
+  if (!audioContext) {
+    audioContext = new AudioCtx();
+    masterGain = audioContext.createGain();
+    masterGain.gain.value = 0.8;
+    masterGain.connect(audioContext.destination);
+
+    sfxGain = audioContext.createGain();
+    sfxGain.gain.value = 0.85;
+    sfxGain.connect(masterGain);
+
+    bgmGain = audioContext.createGain();
+    bgmGain.gain.value = 0.0001;
+    bgmGain.connect(masterGain);
+  }
+
+  if (!audioContext) {
+    audioReady = false;
+    return Promise.resolve(false);
+  }
+
+  const finalize = () => {
+    audioReady = audioContext.state === "running";
+    if (audioReady) {
+      startBackgroundMusic();
+    }
+    return audioReady;
+  };
+
+  if (audioContext.state === "suspended") {
+    return audioContext
+      .resume()
+      .then(finalize)
+      .catch(() => {
+        audioReady = false;
+        return false;
+      });
+  }
+
+  return Promise.resolve(finalize());
+}
+
+function playSound(name) {
+  if (!audioContext || !sfxGain) return;
+  if (audioContext.state === "suspended") {
+    audioContext
+      .resume()
+      .then(() => {
+        audioReady = audioContext.state === "running";
+        playSound(name);
+      })
+      .catch(() => {});
+    return;
+  }
+  audioReady = audioContext.state === "running";
+  if (!audioReady) return;
+
+  const sequence = SOUND_LIBRARY[name];
+  if (!sequence) return;
+
+  let start = audioContext.currentTime + 0.01;
+  sequence.forEach((note) => {
+    scheduleTone(start, note, sfxGain);
+    const duration = note.duration ?? 0.2;
+    start += duration * 0.82;
+  });
+}
+
+function startBackgroundMusic() {
+  if (!audioContext || !audioReady || !bgmGain) return;
+  if (audioContext.state === "suspended") {
+    audioContext
+      .resume()
+      .then(() => {
+        audioReady = audioContext.state === "running";
+        if (audioReady) {
+          startBackgroundMusic();
+        }
+      })
+      .catch(() => {});
+    return;
+  }
+  if (backgroundScheduled) return;
+
+  backgroundScheduled = true;
+  backgroundNextTime = audioContext.currentTime + 0.1;
+
+  const now = audioContext.currentTime;
+  bgmGain.gain.cancelScheduledValues(now);
+  bgmGain.gain.setValueAtTime(Math.max(0.0001, bgmGain.gain.value || 0.0001), now);
+  bgmGain.gain.setTargetAtTime(0.32, now, 0.6);
+
+  scheduleBackground();
+  const interval = Math.max(180, BGM_BEAT_DURATION * 1000);
+  backgroundIntervalId = window.setInterval(scheduleBackground, interval);
+}
+
+function pauseBackgroundMusic() {
+  if (!bgmGain) return;
+  if (backgroundIntervalId) {
+    window.clearInterval(backgroundIntervalId);
+    backgroundIntervalId = null;
+  }
+  backgroundScheduled = false;
+  if (!audioContext) return;
+  const now = audioContext.currentTime;
+  bgmGain.gain.cancelScheduledValues(now);
+  bgmGain.gain.setTargetAtTime(0.0001, now, 0.4);
+}
+
+function scheduleBackground() {
+  if (!backgroundScheduled || !audioContext || !bgmGain) return;
+  const now = audioContext.currentTime;
+  const horizon = now + BGM_BEAT_DURATION * BGM_LOOP_BEATS * 1.5;
+
+  while (backgroundNextTime < horizon) {
+    BGM_SEQUENCE.forEach((note) => {
+      scheduleTone(backgroundNextTime + note.beat * BGM_BEAT_DURATION, note, bgmGain);
+    });
+    BGM_BASS_SEQUENCE.forEach((note) => {
+      scheduleTone(backgroundNextTime + note.beat * BGM_BEAT_DURATION, note, bgmGain);
+    });
+    backgroundNextTime += BGM_LOOP_BEATS * BGM_BEAT_DURATION;
+  }
+}
+
+function scheduleTone(startTime, note, destination) {
+  if (!audioContext || !destination) return;
+  const { freq, glide, duration = 0.2, type = "sine", gain = 0.2 } = note;
+  const oscillator = audioContext.createOscillator();
+  const gainNode = audioContext.createGain();
+
+  oscillator.type = type;
+  oscillator.frequency.setValueAtTime(freq, startTime);
+  if (typeof glide === "number") {
+    oscillator.frequency.linearRampToValueAtTime(glide, startTime + duration);
+  }
+
+  const safeGain = Math.max(0.0001, gain);
+  gainNode.gain.setValueAtTime(0.0001, startTime);
+  gainNode.gain.exponentialRampToValueAtTime(safeGain, startTime + 0.02);
+  gainNode.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+
+  oscillator.connect(gainNode);
+  gainNode.connect(destination);
+
+  oscillator.start(startTime);
+  oscillator.stop(startTime + duration + 0.05);
 }
 
 function buildOptions(correct, step) {

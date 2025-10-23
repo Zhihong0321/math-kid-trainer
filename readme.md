@@ -13,8 +13,9 @@ coaching cues when a mistake slips through.
 
 ### Number Streak
 Dash alongside a moving queue of numbers, fill in the glowing gaps, and keep the train rolling
-before the empty car hits the station. Correct answers make the train 1% faster (up to 50%) and
-each difficulty counts by a different step, so ShuLaw can practice 1s, 2s, or 3s on demand.
+before the empty car hits the station. Trains can now stretch to 60 cars, a chiptune loop keeps the
+energy up, and each correct answer speeds the rhythm by 1% (capped at 50%) while ShuLaw practises
+1s, 2s, or 3s on demand.
 
 ## Run locally
 

@@ -13,38 +13,68 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <nav class="room-nav">
-      <a class="room-nav__link" href="../../index.html">← Back to Math Gym Lobby</a>
+    <nav class="game-nav">
+      <a class="home-link" href="../../index.html">← Back to Math Gym Lobby</a>
     </nav>
 
-    <main class="room-preview" aria-labelledby="room-title">
-      <header class="room-preview__header">
-        <p class="room-preview__eyebrow">Training Room Sneak Peek</p>
-        <h1 class="room-preview__title" id="room-title">Number Streak</h1>
-        <p class="room-preview__subtitle">
-          ShuLaw, get ready to stack lightning-fast answers and build an unbeatable streak.
-          The room is warming up and will be ready for you soon!
+    <div class="game-wrapper">
+      <header class="game-header">
+        <p class="game-eyebrow">Pattern sprint challenge</p>
+        <h1 class="game-title">Number Streak</h1>
+        <p class="game-subtitle">
+          ShuLaw, keep the streak alive by spotting the missing numbers before the train leaves
+          the station!
         </p>
       </header>
 
-      <section class="room-preview__details" aria-label="What to expect in Number Streak">
-        <div class="detail-card">
-          <h2>Goals</h2>
-          <p>Rapid-fire number matches that grow your streak as long as you stay accurate.</p>
+      <section class="scoreboard" aria-label="Your progress">
+        <div class="score-card">
+          <span class="label">Score</span>
+          <span class="value" id="scoreValue">0</span>
         </div>
-        <div class="detail-card">
-          <h2>Focus Areas</h2>
-          <ul>
-            <li>Mental addition &amp; subtraction</li>
-            <li>Speedy pattern recognition</li>
-            <li>Confidence under a timer</li>
-          </ul>
+        <div class="score-card">
+          <span class="label">Streak</span>
+          <span class="value" id="streakValue">0</span>
+          <span class="mini" id="bestValue">Best 0</span>
         </div>
-        <div class="detail-card">
-          <h2>Status</h2>
-          <p>Designing the challenges and celebrations. Check back for the grand opening!</p>
+        <div class="score-card">
+          <span class="label">Speed</span>
+          <span class="value" id="speedValue">100%</span>
+          <span class="mini">Time left: <span id="timeValue">--</span>s</span>
         </div>
       </section>
-    </main>
+
+      <section class="difficulty-panel" aria-label="Select difficulty">
+        <div class="difficulty-intro">Pick your streak pace, ShuLaw!</div>
+        <div class="difficulty-buttons" role="group" aria-label="Difficulty">
+          <button class="difficulty-button active" data-difficulty="easy" type="button">Easy</button>
+          <button class="difficulty-button" data-difficulty="medium" type="button">Medium</button>
+          <button class="difficulty-button" data-difficulty="hard" type="button">Hard</button>
+        </div>
+        <p class="difficulty-note" id="difficultyNote">Counting by 1s • about 5.5s to answer</p>
+      </section>
+
+      <main class="stage-wrapper" aria-live="polite">
+        <div class="sequence-stage" id="sequenceStage">
+          <div class="stage-backdrop"></div>
+          <div class="highlight-window" id="highlightWindow">
+            <span class="highlight-label">Answer zone</span>
+          </div>
+          <div class="sequence-row" id="sequenceRow"></div>
+        </div>
+      </main>
+
+      <section class="prompt-panel" id="promptPanel" aria-live="polite">
+        Tap “Start Number Streak” to warm up the numbers, ShuLaw!
+      </section>
+
+      <section class="choices" id="choices" aria-label="Choose the missing number"></section>
+
+      <section class="control-panel">
+        <button id="playButton" class="primary">Start Number Streak</button>
+      </section>
+    </div>
+
+    <script src="game.js"></script>
   </body>
 </html>

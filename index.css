@@ -145,6 +145,21 @@ body {
   background: radial-gradient(circle at top left, rgba(106, 90, 205, 0.3), transparent 60%);
 }
 
+.room-card--new::before {
+  background: radial-gradient(circle at top right, rgba(255, 200, 98, 0.28), transparent 58%);
+}
+
+.room-card--new .room-card__cta {
+  background: linear-gradient(135deg, var(--yellow), var(--pink));
+  color: #3c2f6b;
+  box-shadow: 0 12px 26px rgba(255, 200, 98, 0.3);
+}
+
+.room-card--new .room-card__meta {
+  background: rgba(255, 200, 98, 0.18);
+  color: #a34b8f;
+}
+
 .room-card--soon {
   opacity: 0.9;
 }

@@ -11,9 +11,10 @@ Sprint to match the falling tile with ShuLaw’s target number before the countd
 Select from three difficulty levels, earn streaks, enjoy confetti bursts, and learn from
 coaching cues when a mistake slips through.
 
-### Number Streak (preview)
-A warm-up space outlining the next fast-paced streak challenge. The dedicated room gives a
-sneak peek until the gameplay is ready.
+### Number Streak
+Dash alongside a moving queue of numbers, fill in the glowing gaps, and keep the train rolling
+before the empty car hits the station. Correct answers make the train 1% faster (up to 50%) and
+each difficulty counts by a different step, so ShuLaw can practice 1s, 2s, or 3s on demand.
 
 ## Run locally
 

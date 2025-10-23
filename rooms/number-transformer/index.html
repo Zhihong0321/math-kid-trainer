@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Number Transformer | ShuLaw's Math Gym</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <nav class="game-nav">
+      <a class="home-link" href="../../index.html">← Back to Math Gym Lobby</a>
+    </nav>
+
+    <div class="game-wrapper">
+      <header class="game-header">
+        <p class="game-eyebrow">Approximation power-up</p>
+        <h1 class="game-title">Number Transformer</h1>
+        <p class="game-subtitle">
+          ShuLaw, morph each number into its best friendly value! Round to the highlighted place
+          before the timer bar runs out.
+        </p>
+      </header>
+
+      <section class="scoreboard" aria-label="Your progress">
+        <div class="score-card">
+          <span class="label">Score</span>
+          <span class="value" id="scoreValue">0</span>
+        </div>
+        <div class="score-card">
+          <span class="label">Streak</span>
+          <span class="value" id="streakValue">0</span>
+          <span class="mini" id="bestValue">Best 0</span>
+        </div>
+        <div class="score-card">
+          <span class="label">Accuracy</span>
+          <span class="value" id="accuracyValue">--%</span>
+          <span class="mini">Time: <span id="timeValue">--</span>s</span>
+        </div>
+      </section>
+
+      <section class="difficulty-panel" aria-label="Select difficulty">
+        <div class="difficulty-intro">Pick your transformation mission, ShuLaw!</div>
+        <div class="difficulty-buttons" role="group" aria-label="Difficulty">
+          <button class="difficulty-button active" type="button" data-difficulty="easy">Easy</button>
+          <button class="difficulty-button" type="button" data-difficulty="medium">Medium</button>
+          <button class="difficulty-button" type="button" data-difficulty="hard">Hard</button>
+        </div>
+        <p class="difficulty-note" id="difficultyNote">Nearest tens • numbers up to 90 • 9s to transform</p>
+      </section>
+
+      <main class="stage-wrapper" aria-live="polite">
+        <div class="transform-stage" id="transformStage">
+          <div class="timer-rail" aria-hidden="true">
+            <div class="timer-fill" id="timerFill"></div>
+          </div>
+          <div class="stage-glow" id="stageGlow"></div>
+          <div class="stage-row">
+            <div class="stage-bubble stage-bubble--source">
+              <span class="bubble-label">Start</span>
+              <span class="bubble-value" id="sourceValue">--</span>
+            </div>
+            <div class="stage-arrow">
+              <span class="arrow-symbol">≈</span>
+              <span class="arrow-label" id="arrowLabel">Nearest 10</span>
+            </div>
+            <div class="stage-bubble stage-bubble--target" id="targetBubble">
+              <span class="bubble-label">Becomes</span>
+              <span class="bubble-value" id="targetValue">?</span>
+            </div>
+          </div>
+          <div class="number-line" aria-hidden="true">
+            <div class="line-track"></div>
+            <div class="line-highlight" id="lineHighlight"></div>
+            <div class="tick tick--lower">
+              <span class="tick-label" id="lowerLabel">0</span>
+            </div>
+            <div class="tick tick--upper">
+              <span class="tick-label" id="upperLabel">0</span>
+            </div>
+            <div class="marker marker--source" id="sourceMarker">
+              <span class="marker-label" id="markerLabel">--</span>
+            </div>
+            <div class="marker marker--target" id="targetMarker">
+              <span class="marker-label" id="targetMarkerLabel">?</span>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <section class="feedback-panel" id="feedbackPanel" aria-live="polite">
+        Tap “Start Transforming” to warm up the number magic, ShuLaw!
+      </section>
+
+      <section class="choices" id="choices" aria-label="Choose the best approximation"></section>
+
+      <section class="control-panel">
+        <button id="startButton" class="primary">Start Transforming</button>
+      </section>
+    </div>
+
+    <script src="game.js"></script>
+  </body>
+</html>

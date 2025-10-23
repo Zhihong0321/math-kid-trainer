@@ -17,6 +17,11 @@ before the empty car hits the station. Trains can now stretch to 60 cars, a chip
 energy up, and each correct answer speeds the rhythm by 1% (capped at 50%) while ShuLaw practises
 1s, 2s, or 3s on demand.
 
+### Number Transformer
+Race the timer to turn each value into its closest friendly number. Follow the animated number line
+to compare distances and round to the nearest tens, 50s, or hundreds while chiptune beats keep the
+focus flowing.
+
 ## Run locally
 
 1. Open `index.html` in any modern browser (everything is client-side).

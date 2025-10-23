@@ -21,12 +21,41 @@ body {
   margin: 0;
   min-height: 100dvh;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: clamp(12px, 2.5vw, 24px);
   padding: clamp(16px, 4vw, 56px) clamp(12px, 4vw, 40px);
   font-family: var(--font-main);
   background: var(--bg-gradient);
   color: #17233a;
+}
+
+.game-nav {
+  width: min(640px, 96vw);
+  display: flex;
+  justify-content: flex-start;
+}
+
+.home-link {
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 999px;
+  padding: 0.55rem 1.3rem;
+  font-weight: 600;
+  color: #2f285f;
+  text-decoration: none;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.home-link:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.16);
+}
+
+.home-link:focus-visible {
+  outline: 3px solid #62d2ff;
+  outline-offset: 4px;
 }
 
 .game-wrapper {
